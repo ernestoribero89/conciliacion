@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conciliador BROU | SAP vs Banco</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --muted: #94a3b8;
+      --text: #f8fafc;
+      --green: #22c55e;
+      --blue: #38bdf8;
+      --yellow: #facc15;
+      --pink: #fb7185;
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,.18), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.16), transparent 35%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 42px 22px 70px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 52px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .title p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 700px;
+    }
+
+    .badge {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      padding: 12px 16px;
+      border-radius: 999px;
+      color: #dbeafe;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
+    .notice {
+      margin: 22px 0 30px;
+      border: 1px solid rgba(250,204,21,.35);
+      background: rgba(250,204,21,.08);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      color: #fef3c7;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--accent);
+    }
+
+    .card h2 {
+      margin: 8px 0 6px;
+      font-size: 28px;
+    }
+
+    .card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .pillrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      font-size: 12px;
+      color: #dbeafe;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: rgba(255,255,255,.05);
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      border: 1px dashed rgba(255,255,255,.22);
+      background: rgba(15,23,42,.65);
+      color: var(--muted);
+      padding: 13px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 15px;
+      padding: 14px 16px;
+      color: #06111f;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--accent);
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      transition: transform .16s ease, filter .16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 12px;
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .legend div {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: -1px;
+    }
+
+    .green { background:#92D051; }
+    .yellow { background:#FFFF00; }
+    .pink { background:#FF99CC; }
+    .gray { background:#C0C0C0; }
+
+    footer {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+    }
+
+    code {
+      color: #bae6fd;
+      background: rgba(14,165,233,.12);
+      padding: 2px 6px;
+      border-radius: 7px;
+    }
+
+    @media (max-width: 900px) {
+      header, .grid, .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .badge {
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Conciliador BROU</h1>
+        <p>Panel para cruzar archivos SAP contra extractos bancarios BROU en USD, UYU y EUR, manteniendo colorimetría y trazabilidad por moneda.</p>
+      </div>
+      <div class="badge">SAP × Banco · USD / UYU / EUR</div>
+    </header>
+
+    <section class="notice">
+      <strong>Importante:</strong> este HTML es la interfaz. Para que los botones ejecuten los scripts Python, necesitás conectar un backend en <code>/api/conciliar</code> o correrlo mediante GitHub Actions / servidor propio. GitHub Pages por sí solo no ejecuta Python.
+    </section>
+
+    <main class="grid">
+      <section class="card" style="--accent:#38bdf8">
+        <h2>USD</h2>
+        <p>Conciliación BROU USD usando columna SAP <strong>Sdo vencido USD</strong>.</p>
+        <div class="pillrow">
+          <span class="pill">Wiz</span>
+          <span class="pill">Comisiones</span>
+          <span class="pill">Anulados</span>
+          <span class="pill">±3 días</span>
+        </div>
+
+        <label>SAP USD (.xlsx)</label>
+        <input id="sap-usd" type="file" accept=".xlsx,.xls" />
+
+        <label>Banco USD (.xlsx/.xls)</label>
+        <input id="bco-usd" type="file" accept=".xlsx,.xls" />
+
+        <button onclick="conciliar('usd')">Conciliar USD</button>
+        <div id="status-usd" class="status"></div>
+      </section>
+
+      <section class="card" style="--accent:#22c55e">
+        <h2>UYU</h2>
+        <p>Conciliación BROU UYU con lógica especial para sueldos, entes y agrupaciones.</p>
+        <div class="pillrow">
+          <span class="pill">Sueldos</span>
+          <span class="pill">Entes</span>
+          <span class="pill">Wiz</span>
+          <span class="pill">Trazabilidad</span>
+        </div>
+
+        <label>SAP UYU (.xlsx)</label>
+        <input id="sap-uyu" type="file" accept=".xlsx,.xls" />
+
+        <label>Banco UYU (.xlsx/.xls)</label>
+        <input id="bco-uyu" type="file" accept=".xlsx,.xls" />
+
+        <button onclick="conciliar('uyu')">Conciliar UYU</button>
+        <div id="status-uyu" class="status"></div>
+      </section>
+
+      <section class="card" style="--accent:#facc15">
+        <h2>EUR</h2>
+        <p>Conciliación BROU EUR con tolerancia de centavos y detección de diferencias.</p>
+        <div class="pillrow">
+          <span class="pill">Exactos</span>
+          <span class="pill">Centavos</span>
+          <span class="pill">Comisiones</span>
+          <span class="pill">±3 días</span>
+        </div>
+
+        <label>SAP EUR (.xlsx)</label>
+        <input id="sap-eur" type="file" accept=".xlsx,.xls" />
+
+        <label>Banco EUR (.xlsx/.xls)</label>
+        <input id="bco-eur" type="file" accept=".xlsx,.xls" />
+
+        <button onclick="conciliar('eur')">Conciliar EUR</button>
+        <div id="status-eur" class="status"></div>
+      </section>
+    </main>
+
+    <section class="legend">
+      <div><span class="dot green"></span>Verde: conciliado</div>
+      <div><span class="dot yellow"></span>Amarillo: comisión bancaria</div>
+      <div><span class="dot pink"></span>Rosa: revisión manual</div>
+      <div><span class="dot gray"></span>Gris: anulado / excluido</div>
+    </section>
+
+    <footer>
+      <strong>Contrato esperado del backend:</strong><br />
+      POST <code>/api/conciliar</code> con <code>moneda</code>, <code>sap</code> y <code>banco</code> en FormData.
+      La respuesta ideal es un archivo <code>.zip</code> con los dos Excel generados:
+      SAP conciliado y Banco conciliado. Si agregás trazabilidad, incluir columnas como
+      <code>ID_CONCILIACION</code>, <code>TIPO_MATCH</code> y <code>DETALLE</code>.
+    </footer>
+  </div>
+
+  <script>
+    async function conciliar(moneda) {
+      const sap = document.getElementById(`sap-${moneda}`).files[0];
+      const banco = document.getElementById(`bco-${moneda}`).files[0];
+      const status = document.getElementById(`status-${moneda}`);
+
+      if (!sap || !banco) {
+        status.textContent = "Cargá el archivo SAP y el archivo Banco.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("moneda", moneda.toUpperCase());
+      formData.append("sap", sap);
+      formData.append("banco", banco);
+
+      status.textContent = "Procesando conciliación...";
+
+      try {
+        const res = await fetch("/api/conciliar", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error("No se pudo conciliar. Revisá el backend.");
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `conciliacion_BROU_${moneda.toUpperCase()}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        status.textContent = "Listo. Descarga generada.";
+      } catch (err) {
+        status.textContent = "Error: este HTML necesita un backend Python conectado.";
+      }
+    }
+  </script>
+</body>
+</html>
